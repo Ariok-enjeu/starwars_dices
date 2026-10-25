@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `des-sw-${CACHE_VERSION}`;
 const APP_SHELL = [
   './',
@@ -31,19 +31,32 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Cache-first pour les ressources de l'app, avec repli réseau puis page d'accueil hors-ligne.
+// HTML (navigation) : réseau en priorité pour toujours récupérer la dernière version,
+// avec repli sur le cache hors-ligne. Autres ressources : cache en priorité.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
         .then((resp) => {
           const copy = resp.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           return resp;
         })
-        .catch(() => caches.match('./index.html'));
+        .catch(() => caches.match(event.request).then((c) => c || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((resp) => {
+        const copy = resp.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return resp;
+      });
     })
   );
 });
