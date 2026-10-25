@@ -1,0 +1,68 @@
+ La constitution de la réserve de dés (Dice Pool)
+La réserve se compose de trois types de dés
+ :
+A. Les Dés Positifs (apportés par le joueur)
+Dés d'Aptitude (Verts 🟢, d8) & Dés de Maîtrise (Jaunes 🟡, d12) : Ils représentent la combinaison de votre Caractéristique (ex. Agilité) et de votre Compétence (ex. Tir)
+.
+Règle de combinaison : Le score le plus élevé entre la caractéristique et la compétence détermine le nombre total de dés verts
+. Le score le plus faible indique combien de ces dés verts sont transformés (améliorés) en dés jaunes
+.
+Dés de Fortune (Boost) (Bleus 🔵, d6) : Ajoutés pour refléter un avantage tactique, du matériel de qualité ou un environnement favorable
+.
+B. Les Dés Négatifs (définis par le Maître du Jeu)
+Dés de Difficulté (Violets 🟣, d8) : Ils représentent la difficulté intrinsèque de la tâche (de Facile [1 dé] à Formidable [5 dés])
+.
+Dés de Défi (Challenge) (Rouges 🔴, d12) : Ils remplacent les dés violets lorsqu'un adversaire expérimenté s'oppose à vous ou quand la situation présente un danger mortel
+.
+Dés d'Infortune (Setback) (Noirs ⬛, d6) : Ajoutés en cas de complications environnementales (pénombre, terrain glissant, brouillard, fatigue)
+.
+⚖️ 2. La résolution des symboles (Annulation réciproque)
+Une fois tous les dés lancés, on procède à l'annulation des symboles opposés
+ :
+Symbole Positif
+Symbole Négatif
+Règle d'Annulation
+Succès (⁕)
+Échec (▼)
+Chaque Échec annule un Succès
+.
+Avantage (⎈)
+Menace (⎇)
+Chaque Menace annule un Avantage
+.
+A. Déterminer le Succès ou l'Échec de l'action
+S'il reste au moins 1 Succès (⁕) net après annulation, l'action réussit
+.
+S'il reste 0 Succès ou un nombre négatif, l'action échoue
+.
+B. Déterminer les conséquences secondaires (Avantages & Menaces)
+Les Avantages et les Menaces sont évalués indépendamment du succès ou de l'échec de la tâche
+ :
+Avantages nets : Vous obtenez un bénéfice narratif ou tactique secondaire (ex. récupérer du stress, repérer un couvert, accorder un dé bleu à un allié, activer une qualité d'arme)
+.
+Menaces nettes : Une complication survient (ex. subir du stress, perdre sa position, laisser échapper une information)
+.
+🌟 3. Triomphe et Désastre (Les effets majeurs)
+Ces deux symboles apparaissent uniquement sur les dés à 12 faces (Jaune et Rouge)
+ :
+Triomphe (🌟) (Dé Jaune) :
+Compte comme 1 Succès (qui peut être annulé par un Échec)
+.
+Déclenche un effet spécial majeur positif (ex. coup critique automatique, découverte d'un point faible)
+. Cet effet spécial ne peut jamais être annulé par des Échecs ou Désastres
+.
+Désastre / Despair (Dé Rouge) :
+Compte comme 1 Échec (qui peut être annulé par un Succès)
+.
+Déclenche un effet spécial majeur négatif (ex. panne d'arme, blessure grave, explosion d'un réservoir)
+. Cet effet spécial ne peut jamais être annulé
+.
+💡 Les 4 issues narratives possibles
+Grâce à ce système à double axe (Succès/Échec vs Avantage/Menace), une action ne se résume pas à un simple "oui ou non"
+ :
+Succès avec Avantages : L'action réussit et tout se passe idéalement.
+Succès avec Menaces : L'action réussit, mais un problème inattendu survient (ex. vous piratez la porte, mais l'alarme silencieuse se déclenche)
+.
+Échec avec Avantages : L'action échoue, mais vous en tirez un bénéfice (ex. votre tir manque la cible, mais force l'ennemi à abandonner sa position)
+.
+Échec avec Menaces : L'action échoue et la situation s'aggrave.

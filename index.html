@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dés SW">
+<meta name="theme-color" content="#0b0d14">
+<meta name="description" content="Calculateur et lanceur de dés narratifs Star Wars">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/icons/icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="assets/icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<title>Dés Star Wars</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+body{margin:0;background:#0b0d14;color:#eee;font-family:-apple-system,system-ui,Segoe UI,Roboto,sans-serif;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  -webkit-text-size-adjust:100%;touch-action:manipulation}
+main{max-width:560px;margin:0 auto;padding:12px 14px 110px}
+h1{font-size:18px;letter-spacing:3px;text-align:center;color:#ffd54a;margin:8px 0 12px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8a90a6;margin:14px 0 6px}
+.row{display:flex;align-items:center;background:#161a27;border-radius:12px;padding:8px 10px;margin-bottom:6px;border-left:6px solid var(--c)}
+.row .lbl{flex:1;font-size:15px;line-height:1.2}
+.row .lbl small{display:block;color:#8a90a6;font-size:11px}
+.row button{width:44px;height:44px;border:0;border-radius:50%;background:#262c42;color:#fff;font-size:26px;line-height:1}
+.row button:active{background:#3a4263}
+.row .n{width:38px;text-align:center;font-size:22px;font-weight:700}
+.info{font-size:13px;color:#b8bdd0;background:#161a27;border-radius:10px;padding:8px 10px}
+.dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin:0 2px -1px 6px;background:var(--c)}
+#dice{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.die{min-width:52px;min-height:52px;border-radius:10px;background:var(--c);color:#fff;display:flex;align-items:center;
+  justify-content:center;flex-wrap:wrap;padding:4px;font-size:18px;font-weight:700;text-align:center;
+  text-shadow:0 1px 2px #000a;animation:pop .35s ease-out}
+.die.yellow,.die.green{color:#111;text-shadow:none}
+.icn-s,.icn-f,.icn-m,.icn-a,.icn-t,.icn-d{height:.95em;width:.95em;vertical-align:-.12em;filter:invert(1)}
+.die.yellow .icn-s,.die.green .icn-s,.die.yellow .icn-f,.die.green .icn-f,.die.yellow .icn-m,.die.green .icn-m,.die.yellow .icn-a,.die.green .icn-a,.die.yellow .icn-t,.die.green .icn-t,.die.yellow .icn-d,.die.green .icn-d{filter:none}
+.die.empty{opacity:.55;font-size:13px;font-weight:400}
+@keyframes pop{from{transform:scale(.3) rotate(-120deg);opacity:0}to{transform:none;opacity:1}}
+#res{background:#161a27;border-radius:14px;padding:12px;margin-top:10px}
+#verdict{font-size:26px;font-weight:800;text-align:center;margin-bottom:8px}
+.ok{color:#5be07a}.ko{color:#ff6b6b}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.box{background:#0f1220;border-radius:10px;padding:8px;text-align:center;font-size:13px}
+.box b{display:block;font-size:22px;margin-top:2px}
+.special{margin-top:8px;padding:8px;border-radius:10px;font-size:14px;text-align:center}
+.tri{background:#4a3d00;color:#ffe066}.des{background:#4a0d0d;color:#ff9a9a}
+.tot{font-size:12px;color:#8a90a6;text-align:center;margin-top:8px}
+#bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(transparent,#0b0d14 30%)}
+#bar button{border:0;border-radius:14px;font-size:18px;font-weight:700;height:56px}
+#roll{flex:1;background:#ffd54a;color:#111}
+#roll:active{background:#e6b800}
+#reset{width:90px;background:#262c42;color:#fff;font-size:15px!important}
+</style>
+</head>
+<body>
+<main>
+<h1>★ DÉS STAR WARS ★</h1>
+
+<h2>Réserve du joueur</h2>
+<div id="pos"></div>
+<div class="info" id="posInfo"></div>
+
+<h2>Réserve du Maître du Jeu</h2>
+<div id="neg"></div>
+<div class="info" id="negInfo"></div>
+
+<div id="dice"></div>
+<div id="res" hidden></div>
+</main>
+
+<div id="bar">
+  <button id="reset">Reset</button>
+  <button id="roll">🎲 LANCER</button>
+</div>
+
+<script>
+// ============ FACES DES DÉS (à remplacer par les faces réelles) ============
+// S=Succès F=Échec A=Avantage M=Menace T=Triomphe D=Désastre
+const FACES = {
+  ability:     ['', 'S', 'S', 'SS', 'A', 'A', 'SA', 'AA'],
+  proficiency: ['', 'S', 'S', 'SS', 'SS', 'A', 'SA', 'SA', 'SA', 'AA', 'AA', 'T'],
+  boost:       ['', '', 'S', 'SA', 'AA', 'A'],
+  difficulty:  ['', 'F', 'FF', 'M', 'M', 'M', 'MM', 'FM'],
+  challenge:   ['', 'F', 'F', 'FF', 'FF', 'M', 'M', 'FM', 'FM', 'MM', 'MM', 'D'],
+  setback:     ['', '', 'F', 'F', 'M', 'M'],
+};
+const DICE = {
+  ability:     {name:'Aptitude',  d:'d8',  color:'#2e9e44', cls:'green'},
+  proficiency: {name:'Maîtrise',  d:'d12', color:'#f2c400', cls:'yellow'},
+  boost:       {name:'Fortune',   d:'d6',  color:'#2196f3', cls:'blue'},
+  difficulty:  {name:'Difficulté',d:'d8',  color:'#8e24aa', cls:'purple'},
+  challenge:   {name:'Défi',      d:'d12', color:'#d32f2f', cls:'red'},
+  setback:     {name:'Infortune', d:'d6',  color:'#333',    cls:'black'},
+};
+const SYM = {S:'<img class="icn-s" src="assets/succes.png" alt="Succès">', F:'<img class="icn-f" src="assets/echec.png" alt="Échec">', A:'<img class="icn-a" src="assets/avantage.png" alt="Avantage">', M:'<img class="icn-m" src="assets/menace.png" alt="Menace">', T:'<img class="icn-t" src="assets/triomphe.png" alt="Triomphe">', D:'<img class="icn-d" src="assets/desastre.png" alt="Désastre">'};
+
+// ============ ÉTAT ============
+const INPUTS = [
+  {k:'carac', label:'Caractéristique', sub:'ex. Agilité', side:'pos', color:'#2e9e44'},
+  {k:'comp',  label:'Compétence',      sub:'ex. Tir',     side:'pos', color:'#f2c400'},
+  {k:'boost', label:'Dés de Fortune',  sub:'bleus d6',    side:'pos', color:'#2196f3'},
+  {k:'diff',  label:'Difficulté',     sub:'violets d8 (1 Facile … 5 Formidable)', side:'neg', color:'#8e24aa'},
+  {k:'chal',  label:'Dés de Défi',    sub:'remplacent des violets (rouges d12)', side:'neg', color:'#d32f2f'},
+  {k:'set',   label:'Dés d\'Infortune', sub:'noirs d6', side:'neg', color:'#555'},
+];
+let st = JSON.parse(localStorage.getItem('swpool') || 'null') || {carac:0,comp:0,boost:0,diff:0,chal:0,set:0};
+const $ = id => document.getElementById(id);
+const save = () => localStorage.setItem('swpool', JSON.stringify(st));
+
+function pool() {
+  const prof = Math.min(st.carac, st.comp);
+  const abil = Math.max(st.carac, st.comp) - prof;
+  const red = Math.min(st.chal, st.diff);
+  return {proficiency:prof, ability:abil, boost:st.boost,
+          challenge:red, difficulty:st.diff - red, setback:st.set};
+}
+
+function build() {
+  for (const i of INPUTS) {
+    const r = document.createElement('div');
+    r.className = 'row'; r.style.setProperty('--c', i.color);
+    r.innerHTML = `<div class="lbl">${i.label}<small>${i.sub}</small></div>
+      <button data-k="${i.k}" data-d="-1">−</button><div class="n" id="n_${i.k}">0</div>
+      <button data-k="${i.k}" data-d="1">+</button>`;
+    $(i.side).appendChild(r);
+  }
+  document.querySelectorAll('.row button').forEach(b => b.onclick = () => {
+    const k = b.dataset.k; st[k] = Math.max(0, Math.min(15, st[k] + +b.dataset.d));
+    if (navigator.vibrate) navigator.vibrate(8);
+    save(); refresh();
+  });
+}
+
+function refresh() {
+  for (const i of INPUTS) $('n_'+i.k).textContent = st[i.k];
+  const p = pool();
+  const dot = t => `<span class="dot" style="--c:${DICE[t].color}"></span>`;
+  $('posInfo').innerHTML = `Réserve : ${dot('proficiency')}${p.proficiency} jaune(s) ${dot('ability')}${p.ability} vert(s) ${dot('boost')}${p.boost} bleu(s)`;
+  $('negInfo').innerHTML = `Réserve : ${dot('challenge')}${p.challenge} rouge(s) ${dot('difficulty')}${p.difficulty} violet(s) ${dot('setback')}${p.setback} noir(s)`;
+}
+
+function rollPool() {
+  const p = pool(), rolls = [];
+  for (const t of Object.keys(p))
+    for (let n = 0; n < p[t]; n++) {
+      const f = FACES[t];
+      rolls.push({t, face: f[Math.floor(Math.random() * f.length)]});
+    }
+  return rolls;
+}
+
+function resolve(rolls) {
+  let su = 0, fa = 0, ad = 0, th = 0, tr = 0, de = 0;
+  for (const r of rolls) for (const c of r.face) {
+    if (c==='S') su++; else if (c==='F') fa++;
+    else if (c==='A') ad++; else if (c==='M') th++;
+    else if (c==='T') { su++; tr++; } else if (c==='D') { fa++; de++; }
+  }
+  return {su, fa, ad, th, tr, de, net: su - fa, adv: ad - th};
+}
+
+function show(rolls) {
+  $('dice').innerHTML = rolls.map(r => {
+    const d = DICE[r.t];
+    const txt = r.face ? [...r.face].map(c => SYM[c]).join(' ') : '–';
+    return `<div class="die ${d.cls}${r.face ? '' : ' empty'}" style="--c:${d.color}">${txt}</div>`;
+  }).join('');
+  const o = resolve(rolls), res = $('res');
+  res.hidden = false;
+  if (!rolls.length) { res.innerHTML = '<div class="tot">Réserve vide : ajoute des dés.</div>'; return; }
+  const ok = o.net > 0;
+  const advTxt = o.adv > 0 ? `${o.adv} Avantage${o.adv>1?'s':''}` : o.adv < 0 ? `${-o.adv} Menace${o.adv<-1?'s':''}` : 'Neutre';
+  let html = `<div id="verdict" class="${ok?'ok':'ko'}">${ok?'✔ SUCCÈS':'✖ ÉCHEC'}</div>
+    <div class="grid">
+      <div class="box">${o.net>0?'Succès nets':'Échecs nets'}<b class="${ok?'ok':'ko'}">${Math.abs(o.net)}</b></div>
+      <div class="box">${o.adv<0?'Menaces nettes':'Avantages nets'}<b class="${o.adv<0?'ko':'ok'}">${Math.abs(o.adv)}</b></div>
+    </div>`;
+  if (o.tr) html += `<div class="special tri">🌟 TRIOMPHE ×${o.tr} — effet spécial majeur positif (non annulable)</div>`;
+  if (o.de) html += `<div class="special des">💀 DÉSASTRE ×${o.de} — effet spécial majeur négatif (non annulable)</div>`;
+  const issue = ok ? (o.adv<0 ? 'Succès avec Menaces' : 'Succès' + (o.adv>0?' avec Avantages':'')) :
+                     (o.adv<0 ? 'Échec avec Menaces' : 'Échec' + (o.adv>0?' avec Avantages':''));
+  html += `<div class="tot"><b>${issue}</b><br>Bruts : ${o.su} succès / ${o.fa} échecs · ${o.ad} avantages / ${o.th} menaces</div>`;
+  res.innerHTML = html;
+}
+
+$('roll').onclick = () => {
+  const r = rollPool(); show(r);
+  if (navigator.vibrate) navigator.vibrate(30);
+  window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+};
+$('reset').onclick = () => {
+  st = {carac:0,comp:0,boost:0,diff:0,chal:0,set:0}; save(); refresh();
+  $('dice').innerHTML = ''; $('res').hidden = true;
+};
+build(); refresh();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+</script>
+</body>
+</html>
